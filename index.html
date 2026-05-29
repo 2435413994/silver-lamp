@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -1267,14 +1267,23 @@
             const qrcodeContainer = document.getElementById('result_qrcode_display');
             qrcodeContainer.innerHTML = '';
             
-            new QRCode(qrcodeContainer, {
-                text: importUrl,
-                width: 200,
-                height: 200,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            try {
+                if (typeof QRCode !== 'undefined') {
+                    new QRCode(qrcodeContainer, {
+                        text: importUrl,
+                        width: 200,
+                        height: 200,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                } else {
+                    qrcodeContainer.innerHTML = '<p style="color: #666;">二维码库加载失败，请复制下方链接导入：</p><input type="text" value="' + importUrl + '" readonly style="width: 100%; margin-top: 10px; padding: 5px;">';
+                }
+            } catch (e) {
+                console.error('生成二维码出错:', e);
+                qrcodeContainer.innerHTML = '<p style="color: #666;">二维码生成失败，请复制下方链接导入：</p><input type="text" value="' + importUrl + '" readonly style="width: 100%; margin-top: 10px; padding: 5px;">';
+            }
         }
         
         // 公开问卷提交处理函数
@@ -1402,15 +1411,17 @@
                 
                 showPage('public_result');
                 
-                if (typeof QRCode !== 'undefined') {
-                    try {
-                        generateResultQRCode(newArchive);
-                    } catch (qrError) {
-                        console.error('生成二维码失败:', qrError);
+                setTimeout(function() {
+                    if (typeof QRCode !== 'undefined') {
+                        try {
+                            generateResultQRCode(newArchive);
+                        } catch (qrError) {
+                            console.error('生成二维码失败:', qrError);
+                        }
+                    } else {
+                        console.log('QRCode库未加载，跳过生成二维码');
                     }
-                } else {
-                    console.log('QRCode库未加载，跳过生成二维码');
-                }
+                }, 100);
             } catch (err) {
                 console.error('提交表单时出错:', err);
                 alert('提交失败，请稍后重试');
