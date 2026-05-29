@@ -735,6 +735,12 @@
                     <h3>筛查结论与建议</h3>
                     <div id="public_risk_advice"></div>
                 </div>
+                
+                <div class="qrcode-container" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <h3>数据导入二维码</h3>
+                    <p style="color: #666; margin-bottom: 15px;">请医护人员扫描此二维码将数据导入问卷库</p>
+                    <div id="result_qrcode_display" class="qrcode-image"></div>
+                </div>
             </div>
             
             <button onclick="showPage('public_survey')" class="btn" style="margin-top: 10px;">重新评估</button>
@@ -1348,9 +1354,8 @@
         
         // 生成二维码
         function generateQRCode() {
-            const currentUrl = window.location.href;
-            const baseUrl = currentUrl.split('?')[0];
-            const surveyUrl = baseUrl + '?survey=true';
+            const deployedUrl = 'https://2435413994.github.io/silver-lamp/';
+            const surveyUrl = deployedUrl + '?survey=true';
             
             document.getElementById('survey_link').textContent = surveyUrl;
             
@@ -1547,8 +1552,30 @@
             });
             localStorage.setItem('screening_records', JSON.stringify(records));
             
+            // 生成包含数据的二维码供医护人员扫描导入
+            generateResultQRCode(newArchive);
+            
             showPage('public_result');
         });
+        
+        // 生成结果页面的二维码（包含问卷数据）
+        function generateResultQRCode(archiveData) {
+            const dataStr = JSON.stringify(archiveData);
+            const encodedData = btoa(dataStr);
+            const importUrl = 'https://2435413994.github.io/silver-lamp/?import=' + encodeURIComponent(encodedData);
+            
+            const qrcodeContainer = document.getElementById('result_qrcode_display');
+            qrcodeContainer.innerHTML = '';
+            
+            new QRCode(qrcodeContainer, {
+                text: importUrl,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
         
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -1561,11 +1588,58 @@
             console.log('URL参数 survey:', isSurvey);
             console.log('完整URL:', window.location.href);
             
+            // 检查是否有导入数据的参数
+            const importData = urlParams.get('import');
+            if (importData) {
+                console.log('检测到导入数据参数');
+                importArchiveFromQRCode(importData);
+                return;
+            }
+            
             if (isSurvey) {
                 console.log('准备显示公开问卷页面');
                 showPage('public_survey');
             }
         });
+        
+        // 从二维码导入数据到问卷库
+        function importArchiveFromQRCode(encodedData) {
+            try {
+                const dataStr = atob(encodedData);
+                const archiveData = JSON.parse(dataStr);
+                
+                console.log('解析到的档案数据:', archiveData);
+                
+                // 检查是否已登录
+                if (!isStaffLoggedIn) {
+                    alert('请先登录医护人员账号，然后扫描二维码导入数据');
+                    showPage('staff_login');
+                    return;
+                }
+                
+                // 保存到问卷库
+                let archives = JSON.parse(localStorage.getItem('archives') || '{}');
+                const archiveId = archiveData.id_card || 'import_' + Date.now();
+                
+                // 检查是否已存在相同记录
+                if (archives[archiveId]) {
+                    if (!confirm('该受访者数据已存在，是否覆盖？')) {
+                        showPage('archive_list');
+                        return;
+                    }
+                }
+                
+                archives[archiveId] = archiveData;
+                localStorage.setItem('archives', JSON.stringify(archives));
+                
+                alert('数据导入成功！');
+                showPage('archive_list');
+            } catch (err) {
+                console.error('导入数据失败:', err);
+                alert('导入数据失败，请重试');
+                showPage('staff_home');
+            }
+        }
     </script>
 </body>
 </html>
