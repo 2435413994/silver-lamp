@@ -1,0 +1,1571 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结直肠癌早筛风险评估</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .risk-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .risk-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .risk-option {
+            margin-bottom: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .risk-option:hover {
+            background: #f0f0ff;
+        }
+        
+        .risk-option input {
+            margin-right: 10px;
+        }
+        
+        .risk-option label {
+            cursor: pointer;
+            font-weight: normal;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-header {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .risk-summary {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .risk-item {
+            text-align: center;
+        }
+        
+        .risk-label {
+            display: block;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .risk-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .severity-tag {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .severity-high {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .severity-medium {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .severity-low {
+            background: #28a745;
+            color: white;
+        }
+        
+        .advice-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .advice-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .advice-box ul {
+            margin-left: 20px;
+        }
+        
+        .advice-box li {
+            margin-bottom: 8px;
+        }
+        
+        .print-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background: #28a745;
+        }
+        
+        .print-btn:hover {
+            background: #218838;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .qrcode-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .qrcode-image {
+            max-width: 300px;
+            margin: 0 auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .filter-tab:hover {
+            background: #f0f0ff;
+        }
+        
+        .filter-tab.active:hover {
+            background: #5a6fd6;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .risk-badge.high {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .risk-badge.medium {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .risk-badge.low {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 首页 -->
+    <div id="home" class="page active">
+        <header>
+            <h1>结直肠癌早筛风险评估系统</h1>
+            <p class="subtitle">受访者问卷管理与风险评估</p>
+        </header>
+        
+        <div class="container">
+            <div class="card-container">
+                <div class="card">
+                    <h2>医护人员入口</h2>
+                    <p>管理受访者问卷和进行风险评估</p>
+                    <button onclick="showPage('staff_login')" class="btn">登录系统</button>
+                </div>
+                
+                <div class="card">
+                    <h2>受访者入口</h2>
+                    <p>填写结直肠癌早筛风险评估问卷</p>
+                    <button onclick="showPage('public_survey')" class="btn">开始评估</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 医护人员登录 -->
+    <div id="staff_login" class="page">
+        <div class="form-container login-form">
+            <h2>医护人员登录</h2>
+            <form id="staff_login_form">
+                <div class="form-group">
+                    <label for="staff_id">工号</label>
+                    <input type="text" id="staff_id" name="staff_id" placeholder="请输入工号" required>
+                </div>
+                <div class="form-group">
+                    <label for="staff_password">密码</label>
+                    <input type="password" id="staff_password" name="staff_password" placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="btn">登录</button>
+            </form>
+            <a href="#" onclick="showPage('home')" class="back-link">返回首页</a>
+        </div>
+    </div>
+    
+    <!-- 医护人员首页 -->
+    <div id="staff_home" class="page">
+        <header>
+            <h1>结直肠癌早筛风险评估系统</h1>
+            <p class="subtitle">受访者问卷管理与风险评估</p>
+        </header>
+        
+        <div class="container">
+            <div class="card-container">
+                <div class="card">
+                    <h2>受访者问卷库</h2>
+                    <p>详细记录受访者的基本信息和问卷数据，按风险等级归类</p>
+                    <button onclick="showPage('archive_list')" class="btn">问卷列表</button>
+                    <button onclick="showPage('add_archive')" class="btn" style="margin-left: 10px;">添加受访者</button>
+                </div>
+                
+
+                
+                <div class="card">
+                    <h2>二维码分发</h2>
+                    <p>生成可分发的调查问卷二维码，受访者扫码即可填写</p>
+                    <button onclick="showPage('qrcode_page')" class="btn">生成二维码</button>
+                </div>
+            </div>
+            
+            <button onclick="logout()" class="btn" style="background: #dc3545; margin-top: 20px;">退出登录</button>
+        </div>
+    </div>
+    
+    <!-- 受访者问卷列表 -->
+    <div id="archive_list" class="page">
+        <header>
+            <h1>受访者问卷库</h1>
+        </header>
+        
+        <div class="container">
+            <div class="form-container">
+                <div class="filter-tabs">
+                    <div class="filter-tab active" onclick="filterArchive('all')">全部</div>
+                    <div class="filter-tab" onclick="filterArchive('high')">高风险</div>
+                    <div class="filter-tab" onclick="filterArchive('medium')">中风险</div>
+                    <div class="filter-tab" onclick="filterArchive('low')">低风险</div>
+                </div>
+                
+                <table id="archive_table">
+                    <thead>
+                        <tr>
+                            <th>身份证号</th>
+                            <th>姓名</th>
+                            <th>年龄</th>
+                            <th>性别</th>
+                            <th>联系电话</th>
+                            <th>详细住址</th>
+                            <th>风险等级</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archive_table_body">
+                    </tbody>
+                </table>
+                
+                <div id="empty_archive" class="empty-state" style="display: none;">
+                    <p>暂无受访者记录</p>
+                </div>
+            </div>
+            
+            <button onclick="showPage('staff_home')" class="btn" style="margin-top: 20px;">返回首页</button>
+        </div>
+    </div>
+    
+    <!-- 添加受访者 -->
+    <div id="add_archive" class="page">
+        <header>
+            <h1>添加受访者</h1>
+        </header>
+        
+        <div class="container">
+            <div class="form-container">
+                <form id="add_archive_form">
+                    <div class="form-group">
+                        <label for="archive_id">身份证号</label>
+                        <input type="text" id="archive_id" name="archive_id" placeholder="请输入18位身份证号" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="archive_name">姓名</label>
+                        <input type="text" id="archive_name" name="archive_name" placeholder="请输入姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="archive_age">年龄</label>
+                        <input type="number" id="archive_age" name="archive_age" placeholder="请输入年龄" min="1" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="archive_gender">性别</label>
+                        <select id="archive_gender" name="archive_gender" required>
+                            <option value="">请选择性别</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="archive_phone">联系电话</label>
+                        <input type="tel" id="archive_phone" name="archive_phone" placeholder="请输入联系电话">
+                    </div>
+                    <div class="form-group">
+                        <label for="archive_address">详细住址</label>
+                        <input type="text" id="archive_address" name="archive_address" placeholder="请输入详细住址" required>
+                    </div>
+                    <button type="submit" class="btn">保存</button>
+                </form>
+            </div>
+            
+            <button onclick="showPage('staff_home')" class="btn" style="margin-top: 20px;">返回首页</button>
+        </div>
+    </div>
+    
+    <!-- 二维码分发页面 -->
+    <div id="qrcode_page" class="page">
+        <header>
+            <h1>二维码分发</h1>
+        </header>
+        
+        <div class="container">
+            <div class="form-container">
+                <div class="qrcode-container">
+                    <h3>调查问卷二维码</h3>
+                    <p>请使用手机扫码填写结直肠癌早筛风险评估问卷</p>
+                    <div id="qrcode_display" class="qrcode-image">
+                        <img id="qrcode_img" src="" alt="二维码" style="width: 100%;">
+                    </div>
+                    <p style="margin-top: 20px; color: #666;">问卷链接：<span id="survey_link"></span></p>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #ddd;">
+                    <h3>使用说明</h3>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>使用手机微信或浏览器扫描上方二维码</li>
+                        <li>受访者填写问卷后，数据会自动保存到问卷库</li>
+                        <li>可在问卷列表中按风险等级查看和管理</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button onclick="showPage('staff_home')" class="btn" style="margin-top: 20px;">返回首页</button>
+        </div>
+    </div>
+    
+    <!-- 受访者填写问卷页面（公开访问） -->
+    <div id="public_survey" class="page">
+        <header>
+            <h1>结直肠癌早筛风险评估问卷</h1>
+            <p class="subtitle">请填写以下信息进行风险评估</p>
+        </header>
+        
+        <div class="container">
+            <div class="form-container">
+                <form id="public_screening_form">
+                    <div class="form-group">
+                        <label for="public_name">您的姓名</label>
+                        <input type="text" id="public_name" name="public_name" placeholder="请输入姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="public_gender">性别</label>
+                        <select id="public_gender" name="public_gender" required>
+                            <option value="">请选择性别</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="public_age">年龄</label>
+                        <input type="number" id="public_age" name="public_age" placeholder="请输入年龄" min="18" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="public_phone">联系电话（选填）</label>
+                        <input type="tel" id="public_phone" name="public_phone" placeholder="请输入联系电话">
+                    </div>
+                    <div class="form-group">
+                        <label for="public_id_card">身份证号（选填）</label>
+                        <input type="text" id="public_id_card" name="public_id_card" placeholder="请输入18位身份证号">
+                    </div>
+                    <div class="form-group">
+                        <label for="public_address">详细住址（选填）</label>
+                        <input type="text" id="public_address" name="public_address" placeholder="请输入详细住址">
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>一、基本信息</h3>
+                        <div class="risk-option">
+                            <input type="radio" name="public_age_group" value="0" id="public_age_1">
+                            <label for="public_age_1">年龄&lt;40岁 (0分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="public_age_group" value="1" id="public_age_2">
+                            <label for="public_age_2">40-49岁 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="public_age_group" value="2" id="public_age_3">
+                            <label for="public_age_3">50-59岁 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="public_age_group" value="3" id="public_age_4">
+                            <label for="public_age_4">年龄≥60岁 (3分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>二、家族史</h3>
+                        <div class="risk-option">
+                            <input type="radio" name="public_family_history" value="0" id="public_family_1">
+                            <label for="public_family_1">无家族史 (0分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="public_family_history" value="1" id="public_family_2">
+                            <label for="public_family_2">直系亲属有结直肠癌史 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="public_family_history" value="2" id="public_family_3">
+                            <label for="public_family_3">直系亲属有结直肠癌史且发病年龄&lt;50岁 (2分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>三、生活习惯</h3>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_lifestyle" value="1" id="public_smoke">
+                            <label for="public_smoke">吸烟 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_lifestyle" value="1" id="public_drink">
+                            <label for="public_drink">饮酒 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_lifestyle" value="1" id="public_diet">
+                            <label for="public_diet">长期高脂高蛋白饮食 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_lifestyle" value="1" id="public_exercise">
+                            <label for="public_exercise">缺乏运动 (1分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>四、既往病史</h3>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_medical_history" value="1" id="public_polyps">
+                            <label for="public_polyps">有大肠息肉病史 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_medical_history" value="2" id="public_crohn">
+                            <label for="public_crohn">有克罗恩病或溃疡性结肠炎病史 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_medical_history" value="1" id="public_diabetes">
+                            <label for="public_diabetes">有糖尿病病史 (1分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>五、症状</h3>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_symptoms" value="2" id="public_blood">
+                            <label for="public_blood">便血或黑便 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_symptoms" value="1" id="public_constipation">
+                            <label for="public_constipation">长期便秘 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_symptoms" value="1" id="public_diarrhea">
+                            <label for="public_diarrhea">长期腹泻 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_symptoms" value="2" id="public_weight">
+                            <label for="public_weight">不明原因体重下降 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="public_symptoms" value="1" id="public_pain">
+                            <label for="public_pain">腹痛或腹部不适 (1分)</label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn">提交评估</button>
+                </form>
+                
+                <a href="#" onclick="showPage('home')" class="back-link" style="margin-top: 20px;">返回首页</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 公开问卷结果页面 -->
+    <div id="public_result" class="page">
+        <header>
+            <h1>结直肠癌早筛风险评估结果</h1>
+        </header>
+        
+        <div class="container">
+            <div class="result-section">
+                <h2 class="result-header">筛查综合判定</h2>
+                
+                <div class="risk-summary">
+                    <div class="risk-item">
+                        <span class="risk-label">高危项总个数</span>
+                        <div class="risk-value" id="public_high_risk_count" style="color: #dc3545;">0</div>
+                        <span class="risk-label">个</span>
+                    </div>
+                    <div class="risk-item">
+                        <span class="risk-label">风险等级</span>
+                        <div id="public_risk_level" class="severity-tag severity-low">低风险</div>
+                    </div>
+                    <div class="risk-item">
+                        <span class="risk-label">综合得分</span>
+                        <div class="risk-value" id="public_total_points" style="color: #667eea;">0</div>
+                        <span class="risk-label">分</span>
+                    </div>
+                </div>
+                
+                <div class="advice-box">
+                    <h3>筛查结论与建议</h3>
+                    <div id="public_risk_advice"></div>
+                </div>
+            </div>
+            
+            <button onclick="showPage('public_survey')" class="btn" style="margin-top: 10px;">重新评估</button>
+            <a href="#" onclick="showPage('home')" class="back-link" style="margin-left: 20px;">返回首页</a>
+        </div>
+    </div>
+    
+    <!-- 结直肠癌早筛风险评估 -->
+    <div id="colorectal_screening" class="page">
+        <header>
+            <h1>结直肠癌早筛风险评估</h1>
+        </header>
+        
+        <div class="container">
+            <div class="form-container">
+                <form id="screening_form">
+                    <div class="form-group">
+                        <label for="screening_name">受检者姓名</label>
+                        <input type="text" id="screening_name" name="screening_name" placeholder="请输入姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="screening_gender">性别</label>
+                        <select id="screening_gender" name="screening_gender" required>
+                            <option value="">请选择性别</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="screening_age">年龄</label>
+                        <input type="number" id="screening_age" name="screening_age" placeholder="请输入年龄" min="18" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="screening_phone">联系电话</label>
+                        <input type="tel" id="screening_phone" name="screening_phone" placeholder="请输入联系电话">
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>一、基本信息</h3>
+                        <div class="risk-option">
+                            <input type="radio" name="age_group" value="0" id="age_1">
+                            <label for="age_1">年龄&lt;40岁 (0分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="age_group" value="1" id="age_2">
+                            <label for="age_2">40-49岁 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="age_group" value="2" id="age_3">
+                            <label for="age_3">50-59岁 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="age_group" value="3" id="age_4">
+                            <label for="age_4">年龄≥60岁 (3分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>二、家族史</h3>
+                        <div class="risk-option">
+                            <input type="radio" name="family_history" value="0" id="family_1">
+                            <label for="family_1">无家族史 (0分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="family_history" value="1" id="family_2">
+                            <label for="family_2">直系亲属有结直肠癌史 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" name="family_history" value="2" id="family_3">
+                            <label for="family_3">直系亲属有结直肠癌史且发病年龄&lt;50岁 (2分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>三、生活习惯</h3>
+                        <div class="risk-option">
+                            <input type="checkbox" name="lifestyle" value="1" id="smoke">
+                            <label for="smoke">吸烟 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="lifestyle" value="1" id="drink">
+                            <label for="drink">饮酒 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="lifestyle" value="1" id="diet">
+                            <label for="diet">长期高脂高蛋白饮食 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="lifestyle" value="1" id="exercise">
+                            <label for="exercise">缺乏运动 (1分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>四、既往病史</h3>
+                        <div class="risk-option">
+                            <input type="checkbox" name="medical_history" value="1" id="polyps">
+                            <label for="polyps">有大肠息肉病史 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="medical_history" value="2" id="crohn">
+                            <label for="crohn">有克罗恩病或溃疡性结肠炎病史 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="medical_history" value="1" id="diabetes">
+                            <label for="diabetes">有糖尿病病史 (1分)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-section">
+                        <h3>五、症状</h3>
+                        <div class="risk-option">
+                            <input type="checkbox" name="symptoms" value="2" id="blood">
+                            <label for="blood">便血或黑便 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="symptoms" value="1" id="constipation">
+                            <label for="constipation">长期便秘 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="symptoms" value="1" id="diarrhea">
+                            <label for="diarrhea">长期腹泻 (1分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="symptoms" value="2" id="weight">
+                            <label for="weight">不明原因体重下降 (2分)</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" name="symptoms" value="1" id="pain">
+                            <label for="pain">腹痛或腹部不适 (1分)</label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn">提交评估</button>
+                </form>
+            </div>
+            
+            <button onclick="showPage('staff_home')" class="btn" style="margin-top: 20px;">返回首页</button>
+        </div>
+    </div>
+    
+    <!-- 评估结果 -->
+    <div id="screening_result" class="page">
+        <header>
+            <h1>结直肠癌早筛风险评估结果</h1>
+        </header>
+        
+        <div class="container">
+            <div class="result-section">
+                <h2 class="result-header">筛查综合判定</h2>
+                
+                <div class="risk-summary">
+                    <div class="risk-item">
+                        <span class="risk-label">高危项总个数</span>
+                        <div class="risk-value" id="high_risk_count" style="color: #dc3545;">0</div>
+                        <span class="risk-label">个</span>
+                    </div>
+                    <div class="risk-item">
+                        <span class="risk-label">风险等级</span>
+                        <div id="risk_level" class="severity-tag severity-low">低风险</div>
+                    </div>
+                    <div class="risk-item">
+                        <span class="risk-label">综合得分</span>
+                        <div class="risk-value" id="total_points" style="color: #667eea;">0</div>
+                        <span class="risk-label">分</span>
+                    </div>
+                </div>
+                
+                <div class="advice-box">
+                    <h3>筛查结论与建议</h3>
+                    <div id="risk_advice"></div>
+                </div>
+                
+                <div class="signature-section" style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #ddd;">
+                    <div style="display: flex; justify-content: space-around;">
+                        <div>
+                            <div>筛查人签字：________</div>
+                        </div>
+                        <div>
+                            <div>审核人签字：________</div>
+                        </div>
+                        <div>
+                            <div>报告日期：<span id="report_date"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="printReport()" class="btn print-btn">打印报告</button>
+            <button onclick="showPage('colorectal_screening')" class="btn" style="margin-top: 10px;">重新评估</button>
+            <button onclick="showPage('staff_home')" class="btn" style="margin-top: 10px;">返回首页</button>
+        </div>
+    </div>
+    
+    <script>
+        let isStaffLoggedIn = false;
+        
+        // 初始化数据
+        function initData() {
+            if (!localStorage.getItem('archives')) {
+                const defaultArchives = {
+                    '36012345678901234A': {
+                        id_card: '36012345678901234A',
+                        name: '王大爷',
+                        age: 65,
+                        gender: '男',
+                        phone: '13800138001',
+                        address: '某某小区1号楼1单元101'
+                    },
+                    '36012345678901234B': {
+                        id_card: '36012345678901234B',
+                        name: '张桂花',
+                        age: 62,
+                        gender: '女',
+                        phone: '13800138002',
+                        address: '某某小区5号楼2单元503'
+                    },
+                    '36012345678901234C': {
+                        id_card: '36012345678901234C',
+                        name: '李淑芬',
+                        age: 67,
+                        gender: '女',
+                        phone: '13800138003',
+                        address: '某某小区3号楼3单元303'
+                    },
+                    '36012345678901234D': {
+                        id_card: '36012345678901234D',
+                        name: '陈建国',
+                        age: 64,
+                        gender: '男',
+                        phone: '13800138004',
+                        address: '某某小区1号楼2单元101'
+                    }
+                };
+                localStorage.setItem('archives', JSON.stringify(defaultArchives));
+            }
+        }
+        
+        // 显示页面（带登录验证）
+        function showPage(pageId) {
+            const pagesNeedingLogin = ['staff_home', 'archive_list', 'add_archive', 'colorectal_screening', 'screening_result', 'qrcode_page'];
+            const publicPages = ['public_survey', 'public_result'];
+            
+            // 公开页面不需要登录
+            if (!publicPages.includes(pageId) && pagesNeedingLogin.includes(pageId) && !isStaffLoggedIn) {
+                alert('请先登录医护人员账号');
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById('staff_login').classList.add('active');
+                return;
+            }
+            
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            
+            if (pageId === 'archive_list') {
+                loadArchiveList();
+            }
+            
+            if (pageId === 'qrcode_page') {
+                generateQRCode();
+            }
+        }
+        
+        // 医护人员登录
+        document.getElementById('staff_login_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const staffId = document.getElementById('staff_id').value;
+            const password = document.getElementById('staff_password').value;
+            
+            if (staffId === 'admin' && password === '123456') {
+                isStaffLoggedIn = true;
+                alert('登录成功！');
+                showPage('staff_home');
+            } else {
+                alert('工号或密码错误！');
+            }
+        });
+        
+        // 退出登录
+        function logout() {
+            isStaffLoggedIn = false;
+            showPage('home');
+        }
+        
+        // 当前筛选条件
+        let currentFilter = 'all';
+        
+        // 加载受访者列表
+        function loadArchiveList(filter = 'all') {
+            currentFilter = filter;
+            const archives = JSON.parse(localStorage.getItem('archives') || '{}');
+            const tableBody = document.getElementById('archive_table_body');
+            const emptyState = document.getElementById('empty_archive');
+            
+            // 更新筛选标签状态
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.filter-tab[onclick="filterArchive('${filter}')"]`).classList.add('active');
+            
+            tableBody.innerHTML = '';
+            
+            if (Object.keys(archives).length === 0) {
+                emptyState.style.display = 'block';
+                document.getElementById('archive_table').style.display = 'none';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            document.getElementById('archive_table').style.display = 'table';
+            
+            Object.entries(archives).forEach(([archiveId, archive]) => {
+                // 根据筛选条件过滤
+                if (filter !== 'all' && archive.risk_level !== getRiskLabel(filter)) {
+                    return;
+                }
+                
+                const riskClass = archive.risk_level === '高风险' ? 'high' : 
+                                  archive.risk_level === '中风险' ? 'medium' : 
+                                  archive.risk_level === '低风险' ? 'low' : '';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${archive.id_card || archiveId}</td>
+                    <td>${archive.name}</td>
+                    <td>${archive.age}</td>
+                    <td>${archive.gender}</td>
+                    <td>${archive.phone || '无'}</td>
+                    <td>${archive.address}</td>
+                    <td>${archive.risk_level ? `<span class="risk-badge ${riskClass}">${archive.risk_level}</span>` : '-'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="deleteArchive('${archiveId}')" class="btn" style="background: #dc3545;">删除</button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 筛选受访者
+        function filterArchive(filter) {
+            loadArchiveList(filter);
+        }
+        
+        // 获取风险等级标签
+        function getRiskLabel(filter) {
+            const labels = {
+                'high': '高风险',
+                'medium': '中风险',
+                'low': '低风险',
+                'all': 'all'
+            };
+            return labels[filter] || 'all';
+        }
+        
+        // 添加受访者表单
+        document.getElementById('add_archive_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const archiveId = document.getElementById('archive_id').value;
+            const name = document.getElementById('archive_name').value;
+            const age = document.getElementById('archive_age').value;
+            const gender = document.getElementById('archive_gender').value;
+            const phone = document.getElementById('archive_phone').value;
+            const address = document.getElementById('archive_address').value;
+            
+            if (archiveId.length !== 18) {
+                alert('身份证号必须是18位！');
+                return;
+            }
+            
+            const archives = JSON.parse(localStorage.getItem('archives') || '{}');
+            
+            if (archives[archiveId]) {
+                alert('该身份证号已存在记录！');
+                return;
+            }
+            
+            archives[archiveId] = {
+                id_card: archiveId,
+                name: name,
+                age: parseInt(age),
+                gender: gender,
+                phone: phone,
+                address: address
+            };
+            localStorage.setItem('archives', JSON.stringify(archives));
+            
+            alert('记录保存成功！');
+            
+            this.reset();
+            showPage('archive_list');
+        });
+        
+        // 删除受访者记录
+        function deleteArchive(archiveId) {
+            if (confirm('确定要删除该受访者记录吗？')) {
+                const archives = JSON.parse(localStorage.getItem('archives') || '{}');
+                delete archives[archiveId];
+                localStorage.setItem('archives', JSON.stringify(archives));
+                loadArchiveList();
+                alert('记录删除成功！');
+            }
+        }
+        
+        // 结直肠癌早筛风险评估提交
+        document.getElementById('screening_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('screening_name').value;
+            const gender = document.getElementById('screening_gender').value;
+            const age = parseInt(document.getElementById('screening_age').value);
+            const phone = document.getElementById('screening_phone').value;
+            
+            let totalPoints = 0;
+            let highRiskCount = 0;
+            
+            // 年龄评分
+            const ageGroup = document.querySelector('input[name="age_group"]:checked');
+            if (ageGroup) {
+                const agePoints = parseInt(ageGroup.value);
+                totalPoints += agePoints;
+                if (agePoints >= 2) highRiskCount++;
+            }
+            
+            // 家族史评分
+            const familyHistory = document.querySelector('input[name="family_history"]:checked');
+            if (familyHistory) {
+                const familyPoints = parseInt(familyHistory.value);
+                totalPoints += familyPoints;
+                if (familyPoints >= 2) highRiskCount++;
+            }
+            
+            // 生活习惯评分
+            document.querySelectorAll('input[name="lifestyle"]:checked').forEach(checkbox => {
+                totalPoints += parseInt(checkbox.value);
+            });
+            
+            // 既往病史评分
+            document.querySelectorAll('input[name="medical_history"]:checked').forEach(checkbox => {
+                const points = parseInt(checkbox.value);
+                totalPoints += points;
+                if (points >= 2) highRiskCount++;
+            });
+            
+            // 症状评分
+            document.querySelectorAll('input[name="symptoms"]:checked').forEach(checkbox => {
+                const points = parseInt(checkbox.value);
+                totalPoints += points;
+                if (points >= 2) highRiskCount++;
+            });
+            
+            // 计算风险等级
+            let riskLevel, riskAdvice;
+            if (totalPoints >= 8) {
+                riskLevel = '高风险';
+                document.getElementById('risk_level').className = 'severity-tag severity-high';
+                riskAdvice = `
+                    <ul>
+                        <li><strong>风险等级：高风险</strong></li>
+                        <li>建议尽快进行结肠镜检查</li>
+                        <li>定期随访，每1-2年复查一次</li>
+                        <li>建议改善生活方式，戒烟限酒</li>
+                        <li>增加膳食纤维摄入，保持规律运动</li>
+                    </ul>
+                `;
+            } else if (totalPoints >= 4) {
+                riskLevel = '中风险';
+                document.getElementById('risk_level').className = 'severity-tag severity-medium';
+                riskAdvice = `
+                    <ul>
+                        <li><strong>风险等级：中风险</strong></li>
+                        <li>建议进行粪便潜血检测</li>
+                        <li>考虑进行结肠镜检查</li>
+                        <li>建议每3-5年进行一次筛查</li>
+                        <li>注意饮食健康，保持适度运动</li>
+                    </ul>
+                `;
+            } else {
+                riskLevel = '低风险';
+                document.getElementById('risk_level').className = 'severity-tag severity-low';
+                riskAdvice = `
+                    <ul>
+                        <li><strong>风险等级：低风险</strong></li>
+                        <li>建议每5-10年进行一次粪便潜血检测</li>
+                        <li>保持健康的生活方式</li>
+                        <li>如有家族史或出现症状，应及时就医</li>
+                    </ul>
+                `;
+            }
+            
+            // 显示结果
+            document.getElementById('high_risk_count').textContent = highRiskCount;
+            document.getElementById('risk_level').textContent = riskLevel;
+            document.getElementById('total_points').textContent = totalPoints;
+            document.getElementById('risk_advice').innerHTML = riskAdvice;
+            
+            const now = new Date();
+            document.getElementById('report_date').textContent = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            
+            // 保存评估记录
+            const records = JSON.parse(localStorage.getItem('screening_records') || '[]');
+            records.push({
+                id: Date.now(),
+                name: name,
+                gender: gender,
+                age: age,
+                phone: phone,
+                totalPoints: totalPoints,
+                highRiskCount: highRiskCount,
+                riskLevel: riskLevel,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('screening_records', JSON.stringify(records));
+            
+            showPage('screening_result');
+        });
+        
+        // 打印报告
+        function printReport() {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="zh-CN">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>结直肠癌早筛风险评估报表</title>
+                    <style>
+                        body { font-family: 'SimHei', 'Microsoft YaHei', sans-serif; padding: 30px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .header h1 { color: #667eea; }
+                        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+                        .info-item { padding: 10px; background: #f8f9fa; border-radius: 5px; }
+                        .info-label { font-weight: bold; }
+                        .result-section { margin-top: 30px; }
+                        .result-header { text-align: center; color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+                        .risk-summary { display: flex; justify-content: center; gap: 40px; margin: 20px 0; }
+                        .risk-item { text-align: center; }
+                        .risk-label { display: block; color: #666; }
+                        .risk-value { font-size: 2rem; font-weight: bold; }
+                        .severity-tag { display: inline-block; padding: 8px 20px; border-radius: 20px; font-weight: bold; }
+                        .severity-high { background: #dc3545; color: white; }
+                        .severity-medium { background: #ffc107; color: #333; }
+                        .severity-low { background: #28a745; color: white; }
+                        .advice-box { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; }
+                        .signature-section { display: flex; justify-content: space-around; margin-top: 40px; padding-top: 30px; border-top: 1px solid #ddd; }
+                        .signature-item { text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>结直肠癌早筛风险评估报表</h1>
+                        <p>简易正式版</p>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">受检者姓名：</span><span>${document.getElementById('screening_name').value}</span></div>
+                        <div class="info-item"><span class="info-label">性别：</span><span>${document.getElementById('screening_gender').value}</span></div>
+                        <div class="info-item"><span class="info-label">年龄：</span><span>${document.getElementById('screening_age').value}岁</span></div>
+                        <div class="info-item"><span class="info-label">筛查日期：</span><span>${document.getElementById('report_date').textContent}</span></div>
+                        <div class="info-item"><span class="info-label">联系电话：</span><span>${document.getElementById('screening_phone').value || '无'}</span></div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h2 class="result-header">筛查综合判定</h2>
+                        <div class="risk-summary">
+                            <div class="risk-item">
+                                <span class="risk-label">高危项总个数</span>
+                                <div class="risk-value" style="color: #dc3545;">${document.getElementById('high_risk_count').textContent}</div>
+                                <span class="risk-label">个</span>
+                            </div>
+                            <div class="risk-item">
+                                <span class="risk-label">风险等级</span>
+                                <div class="severity-tag ${document.getElementById('risk_level').className.split(' ')[1]}">${document.getElementById('risk_level').textContent}</div>
+                            </div>
+                            <div class="risk-item">
+                                <span class="risk-label">综合得分</span>
+                                <div class="risk-value" style="color: #667eea;">${document.getElementById('total_points').textContent}</div>
+                                <span class="risk-label">分</span>
+                            </div>
+                        </div>
+                        
+                        <div class="advice-box">
+                            <h3>筛查结论与建议</h3>
+                            ${document.getElementById('risk_advice').innerHTML}
+                        </div>
+                        
+                        <div class="signature-section">
+                            <div class="signature-item">
+                                <div>筛查人签字：________</div>
+                            </div>
+                            <div class="signature-item">
+                                <div>审核人签字：________</div>
+                            </div>
+                            <div class="signature-item">
+                                <div>报告日期：${document.getElementById('report_date').textContent}</div>
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        // 生成二维码
+        function generateQRCode() {
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.split('?')[0];
+            const surveyUrl = baseUrl + '?survey=true';
+            
+            document.getElementById('survey_link').textContent = surveyUrl;
+            
+            const qrcodeContainer = document.getElementById('qrcode_display');
+            qrcodeContainer.innerHTML = '';
+            
+            new QRCode(qrcodeContainer, {
+                text: surveyUrl,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+        
+        // 检查localStorage是否可用
+        function checkLocalStorage() {
+            try {
+                const testKey = '__storage_test__';
+                localStorage.setItem(testKey, testKey);
+                localStorage.removeItem(testKey);
+                return true;
+            } catch (e) {
+                console.error('localStorage不可用:', e);
+                return false;
+            }
+        }
+        
+        // 公开问卷提交处理
+        document.getElementById('public_screening_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('表单提交已触发');
+            
+            // 检查localStorage是否可用
+            if (!checkLocalStorage()) {
+                alert('浏览器存储功能不可用，请检查浏览器隐私设置或尝试使用其他浏览器！');
+                return;
+            }
+            
+            const name = document.getElementById('public_name').value;
+            const gender = document.getElementById('public_gender').value;
+            const age = parseInt(document.getElementById('public_age').value);
+            const phone = document.getElementById('public_phone').value;
+            const idCard = document.getElementById('public_id_card').value;
+            const address = document.getElementById('public_address').value;
+            
+            console.log('表单数据:', {name, gender, age, phone, idCard, address});
+            
+            // 验证必填项
+            if (!name || !gender || isNaN(age)) {
+                alert('请填写完整的基本信息！');
+                return;
+            }
+            
+            let totalPoints = 0;
+            let highRiskCount = 0;
+            
+            // 年龄评分
+            const ageGroup = document.querySelector('input[name="public_age_group"]:checked');
+            if (ageGroup) {
+                const agePoints = parseInt(ageGroup.value);
+                totalPoints += agePoints;
+                if (agePoints >= 2) highRiskCount++;
+            }
+            
+            // 家族史评分
+            const familyHistory = document.querySelector('input[name="public_family_history"]:checked');
+            if (familyHistory) {
+                const familyPoints = parseInt(familyHistory.value);
+                totalPoints += familyPoints;
+                if (familyPoints >= 2) highRiskCount++;
+            }
+            
+            // 生活习惯评分
+            document.querySelectorAll('input[name="public_lifestyle"]:checked').forEach(checkbox => {
+                totalPoints += parseInt(checkbox.value);
+            });
+            
+            // 既往病史评分
+            document.querySelectorAll('input[name="public_medical_history"]:checked').forEach(checkbox => {
+                const points = parseInt(checkbox.value);
+                totalPoints += points;
+                if (points >= 2) highRiskCount++;
+            });
+            
+            // 症状评分
+            document.querySelectorAll('input[name="public_symptoms"]:checked').forEach(checkbox => {
+                const points = parseInt(checkbox.value);
+                totalPoints += points;
+                if (points >= 2) highRiskCount++;
+            });
+            
+            // 计算风险等级
+            let riskLevel, riskAdvice;
+            if (totalPoints >= 8) {
+                riskLevel = '高风险';
+                document.getElementById('public_risk_level').className = 'severity-tag severity-high';
+                riskAdvice = `
+                    <ul>
+                        <li><strong>风险等级：高风险</strong></li>
+                        <li>建议尽快进行结肠镜检查</li>
+                        <li>定期随访，每1-2年复查一次</li>
+                        <li>建议改善生活方式，戒烟限酒</li>
+                        <li>增加膳食纤维摄入，保持规律运动</li>
+                    </ul>
+                `;
+            } else if (totalPoints >= 4) {
+                riskLevel = '中风险';
+                document.getElementById('public_risk_level').className = 'severity-tag severity-medium';
+                riskAdvice = `
+                    <ul>
+                        <li><strong>风险等级：中风险</strong></li>
+                        <li>建议进行粪便潜血检测</li>
+                        <li>考虑进行结肠镜检查</li>
+                        <li>建议每3-5年进行一次筛查</li>
+                        <li>注意饮食健康，保持适度运动</li>
+                    </ul>
+                `;
+            } else {
+                riskLevel = '低风险';
+                document.getElementById('public_risk_level').className = 'severity-tag severity-low';
+                riskAdvice = `
+                    <ul>
+                        <li><strong>风险等级：低风险</strong></li>
+                        <li>建议每5-10年进行一次粪便潜血检测</li>
+                        <li>保持健康的生活方式</li>
+                        <li>如有家族史或出现症状，应及时就医</li>
+                    </ul>
+                `;
+            }
+            
+            // 显示结果
+            document.getElementById('public_high_risk_count').textContent = highRiskCount;
+            document.getElementById('public_risk_level').textContent = riskLevel;
+            document.getElementById('public_total_points').textContent = totalPoints;
+            document.getElementById('public_risk_advice').innerHTML = riskAdvice;
+            
+            // 自动保存到受访者问卷库
+            const archiveId = idCard || 'survey_' + Date.now();
+            console.log('存档ID:', archiveId);
+            
+            let archives = {};
+            try {
+                archives = JSON.parse(localStorage.getItem('archives') || '{}');
+                console.log('已存在的档案数:', Object.keys(archives).length);
+            } catch (err) {
+                console.error('读取档案失败:', err);
+                archives = {};
+            }
+            
+            const newArchive = {
+                id_card: idCard,
+                name: name,
+                age: age,
+                gender: gender,
+                phone: phone,
+                address: address || '未填写',
+                risk_level: riskLevel,
+                risk_score: totalPoints,
+                high_risk_count: highRiskCount,
+                survey_date: new Date().toISOString()
+            };
+            
+            archives[archiveId] = newArchive;
+            console.log('要保存的新档案:', newArchive);
+            
+            try {
+                localStorage.setItem('archives', JSON.stringify(archives));
+                console.log('档案保存成功！');
+                
+                // 验证保存是否成功
+                const savedArchives = JSON.parse(localStorage.getItem('archives') || '{}');
+                console.log('保存后档案数:', Object.keys(savedArchives).length);
+                console.log('新档案是否存在:', savedArchives[archiveId] ? '是' : '否');
+            } catch (err) {
+                console.error('保存档案失败:', err);
+                alert('保存失败，请稍后重试或联系管理员');
+            }
+            
+            // 保存评估记录
+            const records = JSON.parse(localStorage.getItem('screening_records') || '[]');
+            records.push({
+                id: Date.now(),
+                name: name,
+                gender: gender,
+                age: age,
+                phone: phone,
+                totalPoints: totalPoints,
+                highRiskCount: highRiskCount,
+                riskLevel: riskLevel,
+                date: new Date().toISOString(),
+                source: 'public'
+            });
+            localStorage.setItem('screening_records', JSON.stringify(records));
+            
+            showPage('public_result');
+        });
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM加载完成');
+            initData();
+            
+            // 检查URL参数，如果是问卷链接则直接显示问卷页面
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSurvey = urlParams.get('survey') === 'true';
+            console.log('URL参数 survey:', isSurvey);
+            console.log('完整URL:', window.location.href);
+            
+            if (isSurvey) {
+                console.log('准备显示公开问卷页面');
+                showPage('public_survey');
+            }
+        });
+    </script>
+</body>
+</html>
