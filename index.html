@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -478,6 +478,11 @@
                 
                 <div id="empty_archive" class="empty-state" style="display: none;">
                     <p>暂无受访者记录</p>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button onclick="loadArchiveList(currentFilter)" class="btn" style="background: #17a2b8;">刷新列表</button>
+                    <span id="auto_refresh_status" style="margin-left: 15px; color: #666; font-size: 14px;">自动刷新: 开启</span>
                 </div>
             </div>
             
@@ -1002,10 +1007,38 @@
             
             if (pageId === 'archive_list') {
                 loadArchiveList();
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
             }
             
             if (pageId === 'qrcode_page') {
                 generateQRCode();
+            }
+        }
+        
+        // 自动刷新相关变量
+        let autoRefreshTimer = null;
+        const refreshInterval = 5000; // 5秒刷新一次
+        
+        // 启动自动刷新
+        function startAutoRefresh() {
+            stopAutoRefresh();
+            autoRefreshTimer = setInterval(() => {
+                loadArchiveList(currentFilter);
+            }, refreshInterval);
+            document.getElementById('auto_refresh_status').textContent = '自动刷新: 开启';
+        }
+        
+        // 停止自动刷新
+        function stopAutoRefresh() {
+            if (autoRefreshTimer) {
+                clearInterval(autoRefreshTimer);
+                autoRefreshTimer = null;
+            }
+            const statusEl = document.getElementById('auto_refresh_status');
+            if (statusEl) {
+                statusEl.textContent = '自动刷新: 关闭';
             }
         }
         
