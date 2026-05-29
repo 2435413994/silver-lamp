@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -1265,11 +1265,11 @@
             const importUrl = 'https://2435413994.github.io/silver-lamp/?import=' + encodeURIComponent(encodedData);
             
             const qrcodeContainer = document.getElementById('result_qrcode_display');
-            qrcodeContainer.innerHTML = '';
+            qrcodeContainer.innerHTML = '<p style="color: #666; margin-bottom: 10px;">导入链接：</p><input type="text" value="' + importUrl + '" readonly style="width: 100%; margin-bottom: 10px; padding: 5px;"><p style="color: #666; font-size: 12px;">如果二维码未显示，请复制上方链接发送给医护人员</p>';
             
             try {
                 if (typeof QRCode !== 'undefined') {
-                    new QRCode(qrcodeContainer, {
+                    const qr = new QRCode(qrcodeContainer, {
                         text: importUrl,
                         width: 200,
                         height: 200,
@@ -1277,12 +1277,10 @@
                         colorLight: '#ffffff',
                         correctLevel: QRCode.CorrectLevel.M
                     });
-                } else {
-                    qrcodeContainer.innerHTML = '<p style="color: #666;">二维码库加载失败，请复制下方链接导入：</p><input type="text" value="' + importUrl + '" readonly style="width: 100%; margin-top: 10px; padding: 5px;">';
+                    console.log('QRCode对象创建成功:', qr);
                 }
             } catch (e) {
                 console.error('生成二维码出错:', e);
-                qrcodeContainer.innerHTML = '<p style="color: #666;">二维码生成失败，请复制下方链接导入：</p><input type="text" value="' + importUrl + '" readonly style="width: 100%; margin-top: 10px; padding: 5px;">';
             }
         }
         
@@ -1412,16 +1410,24 @@
                 showPage('public_result');
                 
                 setTimeout(function() {
-                    if (typeof QRCode !== 'undefined') {
+                    console.log('准备生成二维码');
+                    console.log('QRCode库状态:', typeof QRCode);
+                    const container = document.getElementById('result_qrcode_display');
+                    console.log('qrcodeContainer是否存在:', container !== null);
+                    console.log('qrcodeContainer可见性:', container ? container.offsetParent !== null : false);
+                    console.log('qrcodeContainer内容:', container ? container.innerHTML : 'N/A');
+                    
+                    if (typeof QRCode !== 'undefined' && container) {
                         try {
                             generateResultQRCode(newArchive);
+                            console.log('二维码生成调用完成');
                         } catch (qrError) {
                             console.error('生成二维码失败:', qrError);
                         }
                     } else {
-                        console.log('QRCode库未加载，跳过生成二维码');
+                        console.log('无法生成二维码：库或容器问题');
                     }
-                }, 100);
+                }, 500);
             } catch (err) {
                 console.error('提交表单时出错:', err);
                 alert('提交失败，请稍后重试');
